@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Picture</title>
+	<style>
+	*{
+		padding: 0;
+		margin:0;
+	}
+	</style>
+</head>
+<body>
+<img class="openView" width="80px" src="http://static.bootcss.com/www/assets/img/buttons.png">
+	<img class="openView" width="80px" src="http://static.bootcss.com/www/assets/img/lesscss.png">
+	<img class="openView" width="80px" src="http://static.bootcss.com/www/assets/img/underscore.png">
+	<img class="openView" width="80px" src="http://static.bootcss.com/www/assets/img/gruntjs.png">
+	<script src="http://cdn.bootcss.com/jquery/2.1.3/jquery.js"></script>
+	<script>
+	/* 
+	 *$.bindPicView v1.0.0
+	 */
+	(function($,window){
+		$.bindPicView = function(_className){
+			//事件绑定
+			$(document).on('click',_className,execute);
+			//初始化类的声明
+			var init = {};
+			(function($,init){
+				init.winHeight = window.innerHeight || document.documentElement.clientHeight;
+				init.winWidth = window.innerWidth || document.documentElement.clientWidth;
+			//遮罩层 
+				init.shade = "";
+			//图片
+				init.img = "";
+				init.imgSrc = "";
+				init.imgRealWidth = "";
+				init.imgRealHeight = "";
+				init.resetImg = function(){
+					if(init.imgRealWidth  > init.winWidth * 0.8){
+						init.imgRealWidth = init.imgRealWidth *0.6;
+						init.imgRealHeight = init.imgRealHeight *0.6;
+					}
+				}
+			//关闭按钮
+				init.close = "";
+				//注册窗口重绘事件
+				$(window).resize(function(event) {
+						init.winHeight = window.innerHeight || document.documentElement.clientHeight;
+						init.winWidth = window.innerWidth || document.documentElement.clientWidth;
+				});
+			})(jQuery,init);
+			function execute(){
+		// 创建遮罩层(完成)
+				init.shade = $("<div>").css({
+					width: init.winWidth,
+					height: init.winHeight,
+					"position": "absolute",
+					"z-index": 100,
+					background:"black",
+					top:0,
+					opacity:0.6
+				}).appendTo('body').hide().fadeIn(500);
+		//创建关闭按钮
+				init.close = $("<a>").css({
+					position:"absolute",
+					"z-index":102,
+					"text-decoration":"none",
+					color:"white",
+					display:"block",
+					width:"20px",
+					height:"20px",
+					"line-height":"20px",
+					"border-radius":"50%",
+					background:"black",
+					"text-align":"center",
+					"font-size":"4px",
+					transition:"background .5s",
+					left:"50%"
+				}).text("x")
+				.appendTo('body')
+				.hover(function () {
+							$(this).css({"background": "#D90000", "text-decoration": "none"})
+            		},function () {
+                			$(this).css("background", "black")
+					})
+				.hide();
+		// 创建图片
+				init.imgSrc = $(this).attr("src");
+				init.img = $("<img>").css({
+					position:"absolute",
+					"z-index":101,
+					left:"50%",
+					top:"50%",
+					opacity:0.1
+				}).attr('src', init.imgSrc);
+				init.img.appendTo('body').load(function() {
+					init.imgRealWidth = $(this).width();
+					init.imgRealHeight = $(this).height();
+					init.resetImg();
+					$(this).css({
+						top:init.winHeight/2,
+						width:"60px",
+						height:"36px",
+						"margin-left": "-30px", 
+						"margin-top": "-36px",
+					}).animate({
+								"margin-left": -init.imgRealWidth / 2, 
+								"margin-top": -init.imgRealHeight / 2,
+								"width": init.imgRealWidth, 
+								"height": init.imgRealHeight,
+								"border-radius":"6px",
+							  	opacity:1
+							  },
+						300, function() {
+						// 动画执行完毕 绑定关闭事件
+										init.close.css({
+												"top": init.winHeight/2, 
+												"margin-left": init.imgRealWidth/2-10, 
+												"margin-top":-5-init.imgRealHeight/2
+										}).fadeIn(500);
+										init.shade.add(init.close).click(function(){
+												$(init.shade).add(init.img).add(init.close).remove();
+										});
+					});
+				});
+			}
+		}
+	})(jQuery,window);
+	</script>
+	<script>
+		$.bindPicView(".openView");
+	</script>
+</body>
+</html>
